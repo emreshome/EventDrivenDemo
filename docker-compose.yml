@@ -1,0 +1,10 @@
+version: '3'
+services:
+  consumer:
+    build: ./consumer
+    ports:
+      - "8080:8080"
+  producer:
+    build: ./producer
+    ports:
+      - "8081:8081"
