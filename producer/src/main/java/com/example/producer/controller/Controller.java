@@ -1,5 +1,7 @@
 package com.example.producer.controller;
 
+
+import com.example.producer.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,11 +24,15 @@ public class Controller {
     private KafkaTemplate<String, String> kafkaTemplate;
 
     @PostMapping
-    public ResponseEntity<String> addUser(@RequestParam("msg") String msg) {
+    public ResponseEntity<String> addUser(@RequestParam("name") String name) {
         Map<String, Object> headers = new HashMap<>();
         headers.put(KafkaHeaders.TOPIC, "user-topic");
-        kafkaTemplate.send(new GenericMessage<>(msg, headers));
-        LOGGER.info("Data - " + msg + " sent");
+
+        User user = new User();
+        user.setName(name);
+
+        kafkaTemplate.send(new GenericMessage<User>(user, headers));
+        LOGGER.info("Data - " + user + " sent");
 
         return ResponseEntity.ok("OK");
     }
