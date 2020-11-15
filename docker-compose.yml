@@ -1,5 +1,10 @@
-version: '2'
+version: '3'
 services:
+  cassandra:
+    image: cassandra:3.11.3
+    environment:
+      CASSANDRA_ENDPOINT_SNITCH: "GossipingPropertyFileSnitch"
+      CASSANDRA_LISTEN_ADDRESS: "auto"
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     environment:
@@ -41,9 +46,22 @@ services:
     depends_on:
       - kafka
       - zookeeper
+      - cassandra
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 5
+        window: 60s
   consumer:
     build: ./consumer
     depends_on:
       - kafka
       - zookeeper
- 
+      - cassandra
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 5
+        window: 60s

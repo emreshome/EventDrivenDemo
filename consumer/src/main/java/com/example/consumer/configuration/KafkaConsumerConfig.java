@@ -1,6 +1,6 @@
 package com.example.consumer.configuration;
 
-import com.example.consumer.model.User;
+import com.example.consumer.messages.UserFollowerMessage;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,23 +29,23 @@ public class KafkaConsumerConfig {
     private String kafkaGroupId;
 
     @Bean
-    public ConsumerFactory<String, User> consumerConfig() {
+    public ConsumerFactory<String, UserFollowerMessage> consumerConfig() {
         // TODO Auto-generated method stub
         Map<String, Object> config = new HashMap<>();
         config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer);
         config.put(ConsumerConfig.GROUP_ID_CONFIG, kafkaGroupId);
         config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-        JsonDeserializer<User>
-                deserializer = new JsonDeserializer<>(User.class);
-        deserializer.addTrustedPackages("com.example.producer.model");//your package
+        JsonDeserializer<UserFollowerMessage>
+                deserializer = new JsonDeserializer<>(UserFollowerMessage.class);
+        deserializer.addTrustedPackages("com.example.producer.cassandra.model");//your package
 
         return new DefaultKafkaConsumerFactory<>(config, null, deserializer);
     }
 
     @Bean
-    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, User>> kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, User> listener = new ConcurrentKafkaListenerContainerFactory<>();
+    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, UserFollowerMessage>> kafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, UserFollowerMessage> listener = new ConcurrentKafkaListenerContainerFactory<>();
         listener.setConsumerFactory(consumerConfig());
         return listener;
     }
