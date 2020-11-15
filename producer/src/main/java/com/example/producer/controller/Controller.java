@@ -33,7 +33,7 @@ public class Controller {
     }
 
     @PostMapping
-    public ResponseEntity<String> addUser(@RequestParam("name") String name, @RequestParam("lastname") String lastname, @RequestParam(value = "followers[]") String[] followers) {
+    public ResponseEntity<String> addUser(@RequestParam("name") String name, @RequestParam("lastname") String lastname, @RequestParam(value = "followers") String followers) {
         Map<String, Object> headers = new HashMap<>();
         headers.put(KafkaHeaders.TOPIC, "user-topic");
 
@@ -41,7 +41,7 @@ public class Controller {
 
         User u = userRepository.insert(user);
 
-        kafkaTemplate.send(new GenericMessage<>(new UserFollowerMessage(user.getKey().getId().toString(), Arrays.asList(followers)), headers));
+        kafkaTemplate.send(new GenericMessage<>(new UserFollowerMessage(user.getKey().getId().toString(), Arrays.asList(followers.split(","))), headers));
         LOGGER.info("Data - " + user + " sent");
 
         return ResponseEntity.ok("OK");
